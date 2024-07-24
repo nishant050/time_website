@@ -32,10 +32,38 @@
     <div id="display"></div>
 
     <script>
+        const displayElement = document.getElementById('display');
+        const gistId = 'https://gist.github.com/nishant050/ee50e592b7665ae434a01cd64c01dd88'; // Replace with your Gist ID
+        const gistApiUrl = `https://api.github.com/gists/${gistId}`;
+
+        fetch(gistApiUrl)
+            .then(response => response.json())
+            .then(data => {
+                const storedText = data.files['text.txt'].content;
+                displayElement.innerText = storedText;
+            });
+
         function updateDisplay() {
             const editor = document.getElementById('editor');
-            const display = document.getElementById('display');
-            display.innerText = editor.value;
+            const text = editor.value;
+            displayElement.innerText += text + '\n';
+
+            fetch(gistApiUrl, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': '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' // Replace with your GitHub token
+                },
+                body: JSON.stringify({
+                    files: {
+                        'text.txt': {
+                            content: displayElement.innerText
+                        }
+                    }
+                })
+            });
+
+            editor.value = '';
         }
     </script>
 </body>
