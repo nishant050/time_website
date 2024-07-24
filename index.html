@@ -1,20 +1,105 @@
-<!-- index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sophisticated Website</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Secure Interactive Text Editor</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        #editor {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            resize: vertical;
+        }
+        #display {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ecf0f1;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Sophisticated Website</h1>
-        <input id="user-input" type="text" placeholder="Add text here...">
-        <button id="add-button">Add Text</button>
-        <div id="text-container"></div>
-    </div>
-    <script src="script.js"></script>
+    <h1>Secure Interactive Text Editor</h1>
+    <textarea id="editor" placeholder="Enter your text here..."></textarea>
+    <button onclick="updateContent()">Add Text</button>
+    <div id="display"></div>
+
+    <script>
+        const displayElement = document.getElementById('display');
+        const editorElement = document.getElementById('editor');
+
+        // Load initial content
+        loadContent();
+
+        function loadContent() {
+            axios.get('/.netlify/functions/github-api')
+                .then(response => {
+                    displayElement.innerHTML = response.data;
+                })
+                .catch(error => {
+                    console.error('Error loading content:', error);
+                    displayElement.innerHTML = '<p>Error loading content. Please try again later.</p>';
+                });
+        }
+
+        function updateContent() {
+            const text = editorElement.value.trim();
+            if (text) {
+                const newContent = displayElement.innerHTML + `<p>${text}</p>`;
+                
+                axios.post('/.netlify/functions/github-api', { content: newContent })
+                    .then(response => {
+                        if (response.data.success) {
+                            displayElement.innerHTML = newContent;
+                            editorElement.value = '';
+                        } else {
+                            throw new Error('Failed to update content');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating content:', error);
+                        alert('Error updating content. Please try again.');
+                    });
+            }
+        }
+
+        // Handle "Enter" key press
+        editorElement.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                updateContent();
+            }
+        });
+    </script>
 </body>
 </html>
