@@ -3,15 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Text Website</title>
-    <link rel="stylesheet" href="styles.css"> <!-- We'll create this file later -->
+    <title>Text Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #editor {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #display {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Dynamic Text Website</h1>
-    <input type="text" id="user-input" placeholder="Enter your text">
-    <button id="add-text-btn">Add Text</button>
-    <div id="text-display"></div>
+    <h1>Text Editor</h1>
+    <textarea id="editor"></textarea>
+    <button onclick="updateDisplay()">Update</button>
+    <div id="display"></div>
 
-    <script src="script.js"></script> <!-- We'll create this file later -->
+    <script>
+        function updateDisplay() {
+            const editor = document.getElementById('editor');
+            const display = document.getElementById('display');
+            display.innerText = editor.value;
+        }
+    </script>
 </body>
 </html>
