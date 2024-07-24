@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Time</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f7f7f7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.3s ease;
+        }
+        .container {
+            text-align: center;
+            position: relative;
+        }
+        .clock {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            display: inline-block;
+            font-size: 4em;
+            color: #333333;
+            transition: transform 0.3s ease, color 0.3s ease;
+            cursor: pointer;
+        }
+        .clock:hover {
+            transform: scale(1.05);
+        }
+        .title {
+            font-size: 1.5em;
+            color: #555555;
+            margin-bottom: 20px;
+        }
+        .date {
+            font-size: 1.2em;
+            color: #777777;
+            margin-top: 10px;
+        }
+        .color-picker {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .color-picker label {
+            margin: 0 10px;
+        }
+        .color-picker input[type='color'] {
+            border: none;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            border-radius: 50%;
+            padding: 0;
+            outline: none;
+        }
+        .color-picker input[type='color']::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        .color-picker input[type='color']::-webkit-color-swatch {
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">Current Time</div>
+        <div class="clock" id="clock"></div>
+        <div class="date" id="date"></div>
+        <div class="color-picker">
+            <label for="bg-color">Background:</label>
+            <input type="color" id="bg-color" name="bg-color" value="#f7f7f7">
+            <label for="clock-color">Clock:</label>
+            <input type="color" id="clock-color" name="clock-color" value="#333333">
+        </div>
+    </div>
+    <script>
+        let is24HourFormat = false;
+
+        function updateTime() {
+            const clockElement = document.getElementById('clock');
+            const dateElement = document.getElementById('date');
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const day = now.toLocaleDateString('en-US', { weekday: 'long' });
+            const date = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+            let period = '';
+            if (!is24HourFormat) {
+                period = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12;
+            }
+            const formattedHours = hours.toString().padStart(2, '0');
+            const timeFormat = is24HourFormat ? `${formattedHours}:${minutes}:${seconds}` : `${formattedHours}:${minutes}:${seconds} ${period}`;
+            
+            clockElement.textContent = timeFormat;
+            dateElement.textContent = `${day}, ${date}`;
+        }
+
+        function toggleFormat() {
+            is24HourFormat = !is24HourFormat;
+            updateTime();
+        }
+
+        function changeBackgroundColor(event) {
+            document.body.style.background = event.target.value;
+        }
+
+        function changeClockColor(event) {
+            document.getElementById('clock').style.color = event.target.value;
+        }
+
+        document.getElementById('clock').addEventListener('mouseover', toggleFormat);
+        document.getElementById('clock').addEventListener('mouseout', toggleFormat);
+        document.getElementById('bg-color').addEventListener('input', changeBackgroundColor);
+        document.getElementById('clock-color').addEventListener('input', changeClockColor);
+
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+</body>
+</html>
